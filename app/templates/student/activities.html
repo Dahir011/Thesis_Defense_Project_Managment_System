@@ -1,0 +1,49 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Student Portal" %}
+{% block page_title %}Activities{% endblock %}
+{% block sidebar %}
+
+<a class="nav-link" href="{{ url_for('student.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+<a class="nav-link active" href="{{ url_for('student.activities') }}"><i class="bi bi-list-check me-2"></i>Activities</a>
+<a class="nav-link" href="{{ url_for('student.titles') }}"><i class="bi bi-lightbulb me-2"></i>Titles</a>
+<a class="nav-link" href="{{ url_for('student.teamup') }}"><i class="bi bi-people me-2"></i>Team Up</a>
+<a class="nav-link" href="{{ url_for('student.requests_inbox') }}"><i class="bi bi-inbox me-2"></i>Requests</a>
+
+{% endblock %}
+{% block sidebar_mobile %}{{ self.sidebar() }}{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-4">
+  <h4 class="mb-3">Assigned Activities</h4>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>Title</th><th>Creator</th><th>Deadline</th><th>Require PDF</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for a in acts %}
+          {% set sub = subs_by_act.get(a.id) %}
+          <tr>
+            <td>{{ a.title }}</td>
+            <td><span class="badge bg-dark">{{ a.created_by_role }}</span></td>
+            <td>{{ a.deadline_at or '-' }}</td>
+            <td>{% if a.require_pdf %}<span class="badge bg-primary">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}</td>
+            <td>
+              {% if sub %}
+                {% if sub.status == 'Pending' %}<span class="badge bg-warning text-dark">Submitted (Pending)</span>{% endif %}
+                {% if sub.status == 'Marked' %}<span class="badge bg-success">Marked</span>{% endif %}
+                {% if sub.status == 'Rejected' %}<span class="badge bg-danger">Rejected</span>{% endif %}
+              {% else %}
+                <span class="badge bg-secondary">Not submitted</span>
+              {% endif %}
+            </td>
+            <td class="text-end">
+              <a class="btn btn-sm btn-primary" href="{{ url_for('student.submit_activity', activity_id=a.id) }}"><i class="bi bi-upload"></i> Submit</a>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="6" class="text-muted">No activities assigned.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Admin Portal" %}
+{% block page_title %}Title Control{% endblock %}
+{% block sidebar %}
+
+<a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+<a class="nav-link" href="{{ url_for('admin.import_page') }}"><i class="bi bi-upload me-2"></i>Import Data</a>
+<a class="nav-link" href="{{ url_for('admin.registration') }}"><i class="bi bi-person-plus me-2"></i>Registration</a>
+<a class="nav-link" href="{{ url_for('admin.supervisors') }}"><i class="bi bi-person-badge me-2"></i>Supervisors</a>
+<a class="nav-link" href="{{ url_for('admin.students') }}"><i class="bi bi-people me-2"></i>Students</a>
+<a class="nav-link" href="{{ url_for('admin.assigning') }}"><i class="bi bi-diagram-3 me-2"></i>Assigning</a>
+<a class="nav-link" href="{{ url_for('admin.title_control') }}"><i class="bi bi-lightbulb me-2"></i>Title Control</a>
+<a class="nav-link" href="{{ url_for('admin.activity') }}"><i class="bi bi-clipboard-data me-2"></i>Activity Report</a>
+<a class="nav-link" href="{{ url_for('admin.accounts') }}"><i class="bi bi-shield-lock me-2"></i>Accounts</a>
+
+{% endblock %}
+{% block sidebar_mobile %}{{ self.sidebar() }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="bg-white rounded shadow p-4">
+      <h4 class="mb-2">Title Selection Window</h4>
+      <p class="text-muted">Current: 
+        {% if win and win.is_open %}<span class="badge bg-success">OPEN</span>{% else %}<span class="badge bg-secondary">CLOSED</span>{% endif %}
+      </p>
+      <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="is_open" id="openWin" {% if win and win.is_open %}checked{% endif %}>
+          <label class="form-check-label" for="openWin">Open title selection</label>
+        </div>
+        <div class="form-check mt-2">
+          <input class="form-check-input" type="checkbox" name="scope_all" id="scopeAll" {% if not win or win.scope_all_groups %}checked{% endif %}>
+          <label class="form-check-label" for="scopeAll">Apply to all groups</label>
+        </div>
+        <button class="btn btn-primary w-100 mt-3">Save</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="bg-white rounded shadow p-4">
+      <h4 class="mb-3">Title Requests</h4>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead><tr><th>Group</th><th>Title</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            {% for tp in props %}
+              <tr>
+                <td class="fw-bold">{{ tp.group_code }}</td>
+                <td>{{ tp.title }}</td>
+                <td>{{ tp.project_type or '-' }}</td>
+                <td>
+                  <span class="badge bg-info">Admin: {{ tp.status_admin }}</span>
+                  <span class="badge bg-info">Supervisor: {{ tp.status_supervisor }}</span>
+                </td>
+                <td class="d-flex gap-2">
+                  <form method="post" action="{{ url_for('admin.approve_title', tp_id=tp.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-sm btn-success" {% if tp.status_admin=='Approved' %}disabled{% endif %}>Approve</button>
+                  </form>
+                  <form method="post" action="{{ url_for('admin.reject_title', tp_id=tp.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-sm btn-outline-danger">Reject</button>
+                  </form>
+                </td>
+              </tr>
+            {% else %}
+              <tr><td colspan="5" class="text-muted">No title requests yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="alert alert-light border mb-0">
+        Approving moves the title to Supervisor for final approval.
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

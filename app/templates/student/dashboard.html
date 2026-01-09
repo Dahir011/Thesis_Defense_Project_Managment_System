@@ -1,0 +1,174 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Student Portal" %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block sidebar %}
+<a class="nav-link active" href="{{ url_for('student.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+<a class="nav-link" href="{{ url_for('student.activities') }}"><i class="bi bi-list-check me-2"></i>Activities</a>
+<a class="nav-link" href="{{ url_for('student.titles') }}"><i class="bi bi-lightbulb me-2"></i>Titles</a>
+<a class="nav-link" href="{{ url_for('student.teamup') }}"><i class="bi bi-people me-2"></i>Team Up</a>
+<a class="nav-link" href="{{ url_for('student.requests_inbox') }}"><i class="bi bi-inbox me-2"></i>Requests</a>
+{% endblock %}
+{% block sidebar_mobile %}{{ self.sidebar() }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="bg-white rounded shadow p-4">
+      <div class="d-flex align-items-center gap-3">
+        {% if acc.photo_path %}
+          <img src="{{ url_for('student.download_upload', filepath=acc.photo_path) }}"
+              class="rounded-circle"
+              style="width:84px;height:50px;object-fit:cover">
+        {% else %}
+          <div class="rounded-circle d-flex align-items-center justify-content-center text-white"
+              style="width:84px;height:50px;background:{{ acc.avatar_color or '#0d6efd' }};font-weight:700;">
+            {{ acc.avatar_initials or 'NA' }}
+          </div>
+        {% endif %}
+
+        <div>
+          <div class="fw-bold">{{ acc.master.name }}</div>
+          <div class="text-muted" style="font-size:.9rem">{{ acc.student_id }} • {{ acc.master.program }} • {{ acc.master.batch }}</div>
+        </div>
+      </div>
+      <hr>
+      <div class="d-flex justify-content-between">
+        <span class="text-muted">Group Code</span>
+        <span class="fw-bold">{{ group_code or 'Not grouped yet' }}</span>
+      </div>
+      {% if group_code %}
+        <div class="mt-3">
+          <div class="fw-bold mb-2">Team Members</div>
+          <ul class="mb-0">
+            {% for m in group_members %}
+              <li>{{ m.student_id }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% else %}
+        <div class="alert alert-info mt-3 mb-0">You are not in a team yet. Use <b>Team Up</b> to create a group.</div>
+      {% endif %}
+    </div>
+  </div>
+
+<div class="col-lg-4">
+  <div class="bg-white rounded shadow p-4 h-100">
+    <h5 class="mb-3">Supervisor Assignment</h5>
+
+    {% if assignment and supervisor %}
+      <div class="fw-bold mb-1">{{ supervisor.name }}</div>
+
+      {% if supervisor.email %}
+        <div class="text-muted small">
+          <i class="bi bi-envelope"></i> {{ supervisor.email }}
+        </div>
+      {% endif %}
+
+      {% if supervisor.phone %}
+        <div class="text-muted small">
+          <i class="bi bi-telephone"></i> {{ supervisor.phone }}
+        </div>
+      {% endif %}
+
+      <hr>
+      <div class="text-muted small">
+        Assigned at: {{ assignment.assigned_at.strftime('%Y-%m-%d %H:%M') }}
+      </div>
+    {% else %}
+      <div class="alert alert-warning mb-0">Not assigned yet.</div>
+    {% endif %}
+  </div>
+</div>
+
+
+  <div class="col-lg-4">
+    <div class="bg-white rounded shadow p-4 h-100">
+      <h5 class="mb-3">Title Status</h5>
+      {% if title %}
+        <div class="fw-bold">{{ title.title }}</div>
+        <div class="text-muted">Type: {{ title.project_type or '-' }}</div>
+        <span class="badge bg-success mt-2">Fully Approved</span>
+      {% else %}
+        {% if title_open %}
+          <div class="alert alert-info mb-0">Title selection is <b>OPEN</b>. Submit your proposal in Titles page.</div>
+        {% else %}
+          <div class="alert alert-secondary mb-0">Title selection is currently <b>CLOSED</b>.</div>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 mt-1">
+  <div class="col-lg-6">
+    <div class="bg-white rounded shadow p-4">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">Admin Activity</h5>
+        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('student.activities') }}">View All</a>
+      </div>
+      {% if not group_code %}
+        <div class="text-muted">Create or join a group to see activities.</div>
+      {% else %}
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>Title</th><th>Deadline</th><th>Status</th></tr></thead>
+            <tbody>
+              {% for a in activities if a.created_by_role=='admin' %}
+                <tr>
+                  <td>{{ a.title }}</td>
+                  <td>{{ a.deadline_at or '-' }}</td>
+                  <td>
+                    {% if a.id in submitted_ids %}
+                      <span class="badge bg-success">Submitted</span>
+                    {% else %}
+                      <span class="badge bg-warning text-dark">Pending</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% else %}
+                <tr><td colspan="3" class="text-muted">No admin activities.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="bg-white rounded shadow p-4">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">Supervisor Activity</h5>
+        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('student.activities') }}">View All</a>
+      </div>
+      {% if not group_code %}
+        <div class="text-muted">Create or join a group to see activities.</div>
+      {% else %}
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>Title</th><th>Deadline</th><th>Status</th></tr></thead>
+            <tbody>
+              {% for a in activities if a.created_by_role=='supervisor' %}
+                <tr>
+                  <td>{{ a.title }}</td>
+                  <td>{{ a.deadline_at or '-' }}</td>
+                  <td>
+                    {% if a.id in submitted_ids %}
+                      <span class="badge bg-success">Submitted</span>
+                    {% else %}
+                      <span class="badge bg-warning text-dark">Pending</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% else %}
+                <tr><td colspan="3" class="text-muted">No supervisor activities.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

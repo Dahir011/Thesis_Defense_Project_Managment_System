@@ -1,0 +1,75 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Supervisor Portal" %}
+{% block page_title %}Edit Activity{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+
+    <div class="bg-white rounded shadow p-4">
+      <h4 class="mb-3">Edit Activity</h4>
+
+      <form method="post" action="{{ url_for('supervisor.update_activity', activity_id=activity.id) }}">
+
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <!-- Title -->
+        <div class="mb-3">
+          <label class="form-label">Title</label>
+          <input class="form-control" name="title" value="{{ activity.title }}" required>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" name="description" rows="3">{{ activity.description }}</textarea>
+        </div>
+
+        <!-- Dates -->
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="form-label">Start</label>
+            <input class="form-control" type="datetime-local" name="start_at" value="{{ start_at }}">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Deadline</label>
+            <input class="form-control" type="datetime-local" name="deadline_at" value="{{ deadline_at }}">
+          </div>
+        </div>
+
+        <!-- Options -->
+        <div class="form-check mt-3">
+          <input class="form-check-input" type="checkbox" name="require_pdf" {% if activity.require_pdf %}checked{% endif %}>
+          <label class="form-check-label">Require PDF</label>
+        </div>
+
+        <div class="form-check mt-2">
+          <input class="form-check-input" type="checkbox" name="scope_all" {% if activity.scope_all_groups %}checked{% endif %}>
+          <label class="form-check-label">Send to all groups</label>
+        </div>
+
+        <!-- Groups -->
+        <div class="mt-3">
+          <label class="form-label">Select Groups (if not all)</label>
+          <select class="form-select" multiple name="targets">
+            {% for g in groups %}
+              <option value="{{ g.group_code }}" {% if g.group_code in selected_groups %}selected{% endif %}>
+                {{ g.group_code }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Actions -->
+        <div class="d-flex gap-2 mt-4">
+          <button class="btn btn-primary">Update Activity</button>
+          <a href="{{ url_for('supervisor.activity_create') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

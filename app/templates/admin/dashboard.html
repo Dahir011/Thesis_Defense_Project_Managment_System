@@ -1,0 +1,66 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Admin Portal" %}
+{% block page_title %}Dashboard{% endblock %}
+{% block sidebar %}
+<a class="nav-link active" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+<a class="nav-link" href="{{ url_for('admin.import_page') }}"><i class="bi bi-upload me-2"></i>Import Data</a>
+<a class="nav-link" href="{{ url_for('admin.registration') }}"><i class="bi bi-person-plus me-2"></i>Registration</a>
+<a class="nav-link" href="{{ url_for('admin.supervisors') }}"><i class="bi bi-person-badge me-2"></i>Supervisors</a>
+<a class="nav-link" href="{{ url_for('admin.students') }}"><i class="bi bi-people me-2"></i>Students</a>
+<a class="nav-link" href="{{ url_for('admin.assigning') }}"><i class="bi bi-diagram-3 me-2"></i>Assigning</a>
+<a class="nav-link" href="{{ url_for('admin.title_control') }}"><i class="bi bi-lightbulb me-2"></i>Title Control</a>
+<a class="nav-link" href="{{ url_for('admin.activity') }}"><i class="bi bi-clipboard-data me-2"></i>Activity Report</a>
+<a class="nav-link" href="{{ url_for('admin.accounts') }}"><i class="bi bi-shield-lock me-2"></i>Accounts</a>
+{% endblock %}
+{% block sidebar_mobile %}{{ self.sidebar() }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-md-6 col-lg-4">
+    <div class="bg-white rounded shadow p-4">
+      <div class="text-muted">Students (Official Dataset)</div>
+      <div class="display-6 fw-bold">{{ stats.students_master }}</div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-4">
+    <div class="bg-white rounded shadow p-4">
+      <div class="text-muted">Student Accounts</div>
+      <div class="display-6 fw-bold">{{ stats.student_accounts }}</div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-4">
+    <div class="bg-white rounded shadow p-4">
+      <div class="text-muted">Supervisors</div>
+      <div class="display-6 fw-bold">{{ stats.supervisors }}</div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-4">
+    <div class="bg-white rounded shadow p-4">
+      <div class="text-muted">Groups</div>
+      <div class="display-6 fw-bold">{{ stats.groups }}</div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-4">
+    <div class="bg-white rounded shadow p-4">
+      <div class="text-muted">Activities</div>
+      <div class="display-6 fw-bold">{{ stats.activities }}</div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-4">
+    <div class="bg-white rounded shadow p-4">
+      <div class="text-muted">Pending Submissions</div>
+      <div class="display-6 fw-bold">{{ stats.submissions_pending }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="bg-white rounded shadow p-4 mt-4">
+  <h4 class="mb-2">Quick Start</h4>
+  <ol class="mb-0">
+    <li>Import official students dataset (CSV/Excel) → <b>Import Data</b></li>
+    <li>Create supervisors → <b>Registration</b></li>
+    <li>Assign supervisors to groups → <b>Assigning</b></li>
+    <li>Open/close title selection → <b>Title Control</b></li>
+  </ol>
+</div>
+{% endblock %}

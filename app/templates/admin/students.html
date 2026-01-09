@@ -1,0 +1,78 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Admin Portal" %}
+{% block page_title %}Students{% endblock %}
+{% block sidebar %}
+
+<a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+<a class="nav-link" href="{{ url_for('admin.import_page') }}"><i class="bi bi-upload me-2"></i>Import Data</a>
+<a class="nav-link" href="{{ url_for('admin.registration') }}"><i class="bi bi-person-plus me-2"></i>Registration</a>
+<a class="nav-link" href="{{ url_for('admin.supervisors') }}"><i class="bi bi-person-badge me-2"></i>Supervisors</a>
+<a class="nav-link" href="{{ url_for('admin.students') }}"><i class="bi bi-people me-2"></i>Students</a>
+<a class="nav-link" href="{{ url_for('admin.assigning') }}"><i class="bi bi-diagram-3 me-2"></i>Assigning</a>
+<a class="nav-link" href="{{ url_for('admin.title_control') }}"><i class="bi bi-lightbulb me-2"></i>Title Control</a>
+<a class="nav-link" href="{{ url_for('admin.activity') }}"><i class="bi bi-clipboard-data me-2"></i>Activity Report</a>
+<a class="nav-link" href="{{ url_for('admin.accounts') }}"><i class="bi bi-shield-lock me-2"></i>Accounts</a>
+
+{% endblock %}
+{% block sidebar_mobile %}{{ self.sidebar() }}{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h4 class="mb-0">Students</h4>
+    <a class="btn btn-outline-primary" href="{{ url_for('admin.export_not_registered') }}"><i class="bi bi-download"></i> Export Non-Registered</a>
+  </div>
+
+  <form method="get" class="row g-2">
+    <div class="col-md-4">
+      <label class="form-label">Filter</label>
+      <select class="form-select" name="filter">
+        <option value="all" {% if flt=='all' %}selected{% endif %}>All</option>
+        <option value="not_registered" {% if flt=='not_registered' %}selected{% endif %}>Non-Registered</option>
+        <option value="in_team" {% if flt=='in_team' %}selected{% endif %}>In Team</option>
+        <option value="no_team" {% if flt=='no_team' %}selected{% endif %}>Registered but No Team</option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Search</label>
+      <input class="form-control" name="q" value="{{ q }}" placeholder="Student ID or name">
+    </div>
+    <div class="col-md-2 d-grid">
+      <label class="form-label">&nbsp;</label>
+      <button class="btn btn-primary">Apply</button>
+    </div>
+  </form>
+
+  <div class="table-responsive mt-4">
+    <table class="table table-sm align-middle">
+      <thead><tr><th>ID</th><th>Name</th><th>Program</th><th>Batch</th><th>Account</th><th>Team</th></tr></thead>
+      <tbody>
+        {% for sm, sa in rows %}
+          <tr>
+            <td class="fw-bold">{{ sm.student_id }}</td>
+            <td>{{ sm.name }}</td>
+            <td>{{ sm.program }}</td>
+            <td>{{ sm.batch }}</td>
+            <td>
+              {% if sa and sa.user_id %}
+                <span class="badge bg-success">Registered</span>
+              {% else %}
+                <span class="badge bg-secondary">No</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if sa and sa.group_code %}
+                <span class="badge bg-primary">{{ sa.group_code }}</span>
+              {% else %}
+                <span class="badge bg-light text-dark border">-</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="6" class="text-muted">No records.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

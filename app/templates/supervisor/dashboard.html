@@ -1,0 +1,38 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Supervisor Portal" %}
+{% block page_title %}Dashboard{% endblock %}
+{% block sidebar %}
+<a class="nav-link active" href="{{ url_for('supervisor.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+<a class="nav-link" href="{{ url_for('supervisor.groups') }}"><i class="bi bi-people me-2"></i>Assigned Groups</a>
+<a class="nav-link" href="{{ url_for('supervisor.activity_create') }}"><i class="bi bi-plus-circle me-2"></i>Create Activity</a>
+<a class="nav-link" href="{{ url_for('supervisor.reports') }}"><i class="bi bi-clipboard-data me-2"></i>Activity Report</a>
+<a class="nav-link" href="{{ url_for('supervisor.title_approvals') }}"><i class="bi bi-check2-square me-2"></i>Title Approvals</a>
+{% endblock %}
+{% block sidebar_mobile %}{{ self.sidebar() }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-md-6 col-lg-4">
+    <div class="bg-white rounded shadow p-4">
+      <div class="d-flex justify-content-between">
+        <div>
+          <div class="text-muted">Assigned Groups</div>
+          <div class="display-6 fw-bold">{{ groups_count }}</div>
+        </div>
+        <i class="bi bi-people fs-1 text-primary"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-4">
+    <div class="bg-white rounded shadow p-4">
+      <div class="d-flex justify-content-between">
+        <div>
+          <div class="text-muted">Pending Submissions</div>
+          <div class="display-6 fw-bold">{{ subs_pending }}</div>
+        </div>
+        <i class="bi bi-inbox fs-1 text-primary"></i>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

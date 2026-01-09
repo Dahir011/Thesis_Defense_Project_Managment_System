@@ -1,2 +1,97 @@
-# Thesis_Defense_Project_Managment_System
-🎓 UPMS — University Project Management & Supervision System  UPMS (University Project Management & Supervision System) is a full-stack, role-based web application designed to digitize and streamline the entire university project lifecycle — from student registration to final evaluation and reporting.  The system is built to support real academic workflows used by universities for final-year and semester-based projects.  🚀 Key Features 👥 Multi-Role Access Control  Admin  Manage students and supervisors  Assign supervisors to project groups  Monitor overall project progress  Access global reports and analytics  Supervisor  View and manage only assigned project groups  Review submissions and milestones  Provide feedback and evaluations  Student  Register projects or join groups via unique codes  Upload proposals, reports, and milestones  Track supervisor feedback and project status  📂 Project & Group Management  Automatic group code generation  Secure group joining mechanism  Supervisor-group assignment  Project title and description management  📊 Progress Tracking & Reporting  Milestone-based project tracking  Role-scoped dashboards  Reports visible only to authorized roles  Real-time project status updates  📁 File Uploads & Submissions  Upload proposals, documents, and reports  Secure storage and access control  Supervisor review and approval workflow  🧱 Technology Stack Frontend  React (Vite)  Tailwind CSS  React Router (protected routes)  Axios for API communication  Responsive, modern academic UI  Backend  Node.js  Express.js  JWT Authentication  Role-Based Access Control (RBAC)  Multer for file uploads  Database  MySQL (XAMPP compatible)  Relational schema with foreign keys  Seed data included  🔐 Security Features  JWT-based authentication  Role-restricted API endpoints  Protected frontend routes  Secure password hashing  Scoped data access per role  📦 Project Structure upms/ ├── frontend/        # React + Tailwind application ├── backend/         # Node.js + Express API ├── database/        # MySQL schema & seed files ├── uploads/         # Uploaded project documents └── README.md  ⚙️ Installation & Setup 1️⃣ Clone the Repository git clone https://github.com/your-username/upms.git cd upms  2️⃣ Database Setup  Start XAMPP  Create a MySQL database  Import the provided SQL schema and seed files  3️⃣ Backend Setup cd backend npm install npm run dev  4️⃣ Frontend Setup cd frontend npm install npm run dev  🎯 Use Case  UPMS is ideal for:  Final year project management  Semester-based project supervision  Academic institutions seeking digital transformation  Graduation projects and academic demonstrations  📌 Project Status  ✅ Core features implemented ✅ Role-based access enforced ✅ Production-ready architecture 🚧 UI and reporting enhancements ongoing  👨‍💻 Author  Developed as an academic and practical full-stack project to demonstrate:  System design  Secure multi-role architecture  Real-world academic workflows  Scalable backend and modern frontend development
+# UPMS+ TeamUp (Flask + MySQL/XAMPP + HTML/CSS/JS)
+
+This project is a production-ready starter for **UPMS+ TeamUp**:
+- Student / Supervisor / Admin portals
+- Official student dataset import (CSV/Excel)
+- Student account creation (2-step verification)
+- TeamUp requests + automatic group creation
+- Admin assigns supervisor to groups
+- Admin/Supervisor create activities
+- Students submit (PDF required when configured)
+- Mark / Reject submissions
+- Title selection window + approvals (Student → Admin → Supervisor)
+- Accounts management
+
+---
+
+## 1) Requirements
+
+- Python 3.10+
+- XAMPP (MySQL)
+- (Optional) phpMyAdmin
+
+---
+
+## 2) Setup (Windows + PowerShell)
+
+### A) Create DB + tables (MySQL)
+
+1. Start **XAMPP** → start **Apache** and **MySQL**
+2. Open phpMyAdmin → **Import** → import `schema.sql`
+   - OR run the SQL in phpMyAdmin SQL tab
+
+### B) Configure environment
+
+1. Copy `.env.example` to `.env`
+2. Edit DB values if needed:
+   - DB_NAME should match the DB you created (`upms_teamup`)
+   - XAMPP default: user `root` and blank password
+
+### C) Install Python dependencies
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### D) Create default admin + demo data (recommended)
+
+```bash
+flask --app run.py seed
+```
+
+This seeds:
+- Admin: `admin / admin123`
+- Supervisor: `SUP1001 / sup123`
+- Students in dataset: `CS001`, `CS002`, `CS003`
+
+### E) Run the server
+
+```bash
+python run.py
+```
+
+Open:
+- Home: http://127.0.0.1:5000/
+- Student login: /auth/student/login
+- Supervisor login: /auth/supervisor/login
+- Admin login: /auth/admin/login
+
+---
+
+## 3) Import Official Students Dataset
+
+Admin → **Import Data**
+- Upload CSV/Excel with columns:
+  `student_id,name,gender,phone,faculty,program,batch`
+
+After importing, students can create accounts:
+Home → **Create Student Account**
+
+---
+
+## 4) How TeamUp Works
+
+- Student A sends request to Student B (both must be registered & not in a group)
+- Student B accepts → system creates group code automatically and adds both members
+- Admin can add a 3rd student from **Registration → Add 3rd Student**
+
+---
+
+## 5) Notes
+
+- Uploads are stored inside `uploads/`
+- If you want to reset your DB, drop the database and re-import `schema.sql`.
+
+---

@@ -1,0 +1,87 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Admin Portal" %}
+{% block page_title %}Registration{% endblock %}
+{% block sidebar %}
+
+<a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+<a class="nav-link" href="{{ url_for('admin.import_page') }}"><i class="bi bi-upload me-2"></i>Import Data</a>
+<a class="nav-link" href="{{ url_for('admin.registration') }}"><i class="bi bi-person-plus me-2"></i>Registration</a>
+<a class="nav-link" href="{{ url_for('admin.supervisors') }}"><i class="bi bi-person-badge me-2"></i>Supervisors</a>
+<a class="nav-link" href="{{ url_for('admin.students') }}"><i class="bi bi-people me-2"></i>Students</a>
+<a class="nav-link" href="{{ url_for('admin.assigning') }}"><i class="bi bi-diagram-3 me-2"></i>Assigning</a>
+<a class="nav-link" href="{{ url_for('admin.title_control') }}"><i class="bi bi-lightbulb me-2"></i>Title Control</a>
+<a class="nav-link" href="{{ url_for('admin.activity') }}"><i class="bi bi-clipboard-data me-2"></i>Activity Report</a>
+<a class="nav-link" href="{{ url_for('admin.accounts') }}"><i class="bi bi-shield-lock me-2"></i>Accounts</a>
+
+{% endblock %}
+{% block sidebar_mobile %}{{ self.sidebar() }}{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-4">
+  <ul class="nav nav-pills mb-3">
+    <li class="nav-item"><a class="nav-link {% if tab=='supervisor' %}active{% endif %}" href="{{ url_for('admin.registration', tab='supervisor') }}">Supervisor</a></li>
+    <li class="nav-item"><a class="nav-link {% if tab=='third_student' %}active{% endif %}" href="{{ url_for('admin.registration', tab='third_student') }}">Add 3rd Student</a></li>
+  </ul>
+
+  {% if tab == 'supervisor' %}
+  <h4 class="mb-3">Create Supervisor Account</h4>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Full Name</label>
+        <input class="form-control" name="name" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Username / Staff Code</label>
+        <input class="form-control" name="username" placeholder="e.g. SUP1002" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Email</label>
+        <input class="form-control" name="email">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Phone</label>
+        <input class="form-control" name="phone">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Password</label>
+        <input class="form-control" type="password" name="password" required>
+      </div>
+    </div>
+    <button class="btn btn-primary mt-4">Create Supervisor</button>
+  </form>
+
+  {% else %}
+  <h4 class="mb-3">Add 3rd Student (Team Size Control)</h4>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Group Code</label>
+        <select class="form-select" name="group_code" required>
+          <option value="">Select group</option>
+          {% for g in groups %}
+            <option value="{{ g.group_code }}">{{ g.group_code }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Student ID</label>
+        <input class="form-control" name="student_id" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Max Members</label>
+        <select class="form-select" name="max_members">
+          <option value="2">2 members</option>
+          <option value="3" selected>3 members</option>
+          <option value="4">4 members</option>
+        </select>
+      </div>
+      <input type="hidden" name="action" value="add_third_student">
+    </div>
+    <button class="btn btn-primary mt-4">Add Student to Group</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "layouts/base.html" %}
+{% block title %}Create Student Account - Step 2{% endblock %}
+{% block body %}
+<div class="container-xxl py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <div class="bg-white rounded shadow p-4 p-md-5">
+          <h3 class="mb-1">Create Student Account</h3>
+          <p class="text-muted mb-4">Step 2 — Confirm Details + Create Password</p>
+
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label">Student ID</label>
+              <input class="form-control" value="{{ master.student_id }}" readonly>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label">Name</label>
+              <input class="form-control" value="{{ master.name }}" readonly>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Gender</label>
+              <input class="form-control" value="{{ master.gender }}" readonly>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Mobile</label>
+              <input class="form-control" value="{{ master.phone }}" readonly>
+            </div>
+                        <div class="col-md-4">
+              <label class="form-label">Email</label>
+              <input class="form-control" value="{{ master.email }}" readonly>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Batch</label>
+              <input class="form-control" value="{{ master.batch }}" readonly>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Faculty</label>
+              <input class="form-control" value="{{ master.faculty }}" readonly>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Program</label>
+              <input class="form-control" value="{{ master.program }}" readonly>
+            </div>
+          </div>
+          <!-- ✅ Verification block -->
+          <form method="post" class="mb-3">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            {% if not verified %}
+              <input type="hidden" name="action" value="verify_code">
+
+              <div class="alert alert-info">
+                We sent a 6-digit verification code to: <b>{{ master.email }}</b>
+              </div>
+
+              <div class="row g-3 align-items-end">
+                <div class="col-md-6">
+                  <label class="form-label">Verification Code</label>
+                  <input class="form-control" name="verification_code" placeholder="Enter 6-digit code" required>
+                </div>
+                <div class="col-md-6 d-flex gap-2">
+                  <button class="btn btn-primary w-100" type="submit">Verify Code</button>
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <form method="post">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <input type="hidden" name="action" value="resend_code">
+                  <button class="btn btn-outline-secondary w-100" type="submit">Resend Code</button>
+                </form>
+              </div>
+            {% else %}
+              <div class="alert alert-success mb-0">
+                Email verified ✅ You can now create your password.
+              </div>
+            {% endif %}
+          </form>
+
+          <!-- ✅ Create account form (only after verification) -->
+          {% if verified %}
+          <form method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Password</label>
+                <input class="form-control" type="password" name="password" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Confirm Password</label>
+                <input class="form-control" type="password" name="confirm_password" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Profile Photo (Optional)</label>
+                <input class="form-control" type="file" name="photo" accept="image/*">
+                <div class="form-text">If you skip, the system will generate an avatar from your initials.</div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary w-100 py-2 mt-4" type="submit">Create Account</button>
+          </form>
+          {% endif %}
+
+
+          <div class="d-flex justify-content-between mt-3">
+            <a href="{{ url_for('auth.student_register_step1') }}">← Step 1</a>
+            <a href="{{ url_for('auth.student_login') }}">Login</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

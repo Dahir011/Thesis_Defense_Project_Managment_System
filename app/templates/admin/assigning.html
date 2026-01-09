@@ -1,0 +1,167 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Admin Portal" %}
+{% block page_title %}Assigning{% endblock %}
+
+{% block sidebar %}
+<a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+<a class="nav-link" href="{{ url_for('admin.import_page') }}"><i class="bi bi-upload me-2"></i>Import Data</a>
+<a class="nav-link" href="{{ url_for('admin.registration') }}"><i class="bi bi-person-plus me-2"></i>Registration</a>
+<a class="nav-link" href="{{ url_for('admin.supervisors') }}"><i class="bi bi-person-badge me-2"></i>Supervisors</a>
+<a class="nav-link" href="{{ url_for('admin.students') }}"><i class="bi bi-people me-2"></i>Students</a>
+<a class="nav-link active" href="{{ url_for('admin.assigning') }}"><i class="bi bi-diagram-3 me-2"></i>Assigning</a>
+<a class="nav-link" href="{{ url_for('admin.title_control') }}"><i class="bi bi-lightbulb me-2"></i>Title Control</a>
+<a class="nav-link" href="{{ url_for('admin.activity') }}"><i class="bi bi-clipboard-data me-2"></i>Activity Report</a>
+<a class="nav-link" href="{{ url_for('admin.accounts') }}"><i class="bi bi-shield-lock me-2"></i>Accounts</a>
+{% endblock %}
+{% block sidebar_mobile %}{{ self.sidebar() }}{% endblock %}
+
+{% block content %}
+
+<!-- 🔹 ROW 1: TWO FORMS SIDE BY SIDE -->
+<div class="row g-4">
+
+  <!-- LEFT: Assign Supervisor -->
+  <div class="col-lg-6">
+    <div class="bg-white rounded shadow p-4 h-100">
+      <h4 class="mb-3">Assign Supervisor to Group</h4>
+      <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="assign_supervisor">
+<div class="mb-3">
+  <label class="form-label">Group</label>
+  <select class="form-select" name="group_code" required>
+    <option value="">Select group</option>
+    {% for g in groups %}
+      <option value="{{ g.group_code }}">
+        {{ g.group_code }} - 
+        {% for member in g.members_details %}
+          {{ member.name }} ({{ member.student_id }}, {{ member.batch }}) 
+          {% if not loop.last %}, {% endif %}
+        {% endfor %}
+      </option>
+    {% endfor %}
+  </select>
+</div>
+
+        <div class="mb-3">
+          <label class="form-label">Supervisor</label>
+          <select class="form-select" name="supervisor_user_id" required>
+            <option value="">Select supervisor</option>
+            {% for s in supervisors %}
+              <option value="{{ s.id }}">{{ s.username }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <button class="btn btn-primary w-100">Assign</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- RIGHT: Create Activity -->
+  <div class="col-lg-6">
+    <div class="bg-white rounded shadow p-4 h-100">
+      <h4 class="mb-3">Create Activity (Admin)</h4>
+      <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="create_activity">
+
+        <div class="mb-3">
+          <label class="form-label">Title</label>
+          <input class="form-control" name="title" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" name="description" rows="3"></textarea>
+        </div>
+
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="form-label">Start</label>
+            <input class="form-control" type="datetime-local" name="start_at">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Deadline</label>
+            <input class="form-control" type="datetime-local" name="deadline_at">
+          </div>
+        </div>
+
+        <div class="form-check mt-3">
+          <input class="form-check-input" type="checkbox" name="require_pdf" id="reqPdfAdm">
+          <label class="form-check-label" for="reqPdfAdm">Require PDF</label>
+        </div>
+
+        <div class="form-check mt-2">
+          <input class="form-check-input" type="checkbox" name="scope_all" id="scopeAllAdm">
+          <label class="form-check-label" for="scopeAllAdm">Send to all groups</label>
+        </div>
+
+        <div class="mt-3">
+          <label class="form-label">Select Groups (if not all)</label>
+          <select class="form-select" multiple name="targets">
+            {% for g in groups %}
+              <option value="{{ g.group_code }}">{{ g.group_code }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <button class="btn btn-primary w-100 mt-3">Create</button>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<!-- 🔹 ROW 2: RECENT ACTIVITIES (UNCHANGED, FULL WIDTH) -->
+<div class="bg-white rounded shadow p-4 mt-4">
+  <h4 class="mb-3">Recent Admin Activities</h4>
+
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Deadline</th>
+          <th>Scope</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in activities %}
+        <tr>
+          <td>{{ a.title }}</td>
+          <td>{{ a.deadline_at or '-' }}</td>
+          <td>
+            {% if a.scope_all_groups %}
+              <span class="badge bg-success">All</span>
+            {% else %}
+              <span class="badge bg-secondary">Selected</span>
+            {% endif %}
+          </td>
+          <td class="text-end d-flex gap-2 justify-content-end">
+            <a href="{{ url_for('admin.edit_activity', activity_id=a.id) }}"
+               class="btn btn-sm btn-outline-primary">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <form method="post"
+                  action="{{ url_for('admin.delete_activity', activity_id=a.id) }}"
+                  onsubmit="return confirm('Delete this activity permanently?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4" class="text-muted">No activities yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

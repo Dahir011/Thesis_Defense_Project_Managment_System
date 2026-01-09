@@ -1,0 +1,110 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Supervisor Portal" %}
+{% block page_title %}Activity Report{% endblock %}
+
+{% block sidebar %}
+<a class="nav-link" href="{{ url_for('supervisor.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+<a class="nav-link" href="{{ url_for('supervisor.groups') }}"><i class="bi bi-people me-2"></i>Assigned Groups</a>
+<a class="nav-link" href="{{ url_for('supervisor.activity_create') }}"><i class="bi bi-plus-circle me-2"></i>Create Activity</a>
+<a class="nav-link active" href="{{ url_for('supervisor.reports') }}"><i class="bi bi-clipboard-data me-2"></i>Activity Report</a>
+<a class="nav-link" href="{{ url_for('supervisor.title_approvals') }}"><i class="bi bi-check2-square me-2"></i>Title Approvals</a>
+{% endblock %}
+{% block sidebar_mobile %}{{ self.sidebar() }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+@media print{
+  .dash-topbar,.dash-sidebar,.btn{display:none !important;}
+  .dash-content{background:#fff !important;}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Submissions Received</h4>
+    <button class="btn btn-outline-primary" onclick="window.print()">
+      <i class="bi bi-printer"></i> Print
+    </button>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Group</th>
+          <th>Activity</th>
+          <th>Submitted</th>
+          <th>File</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for s in subs %}
+        <tr>
+          <td class="fw-bold">{{ s.group_code }}</td>
+          <td>{{ s.activity.title }}</td>
+          <td>{{ s.submitted_at }}</td>
+
+          <!-- FILE COLUMN -->
+          <td>
+            {% if s.file_path %}
+              <div class="d-flex gap-2">
+                <a class="btn btn-sm btn-outline-primary"
+                   href="{{ url_for('student.download_upload', filepath=s.file_path) }}"
+                   target="_blank">
+                  <i class="bi bi-eye"></i> View
+                </a>
+                <a class="btn btn-sm btn-outline-secondary"
+                   href="{{ url_for('student.download_upload', filepath=s.file_path) }}"
+                   download>
+                  <i class="bi bi-download"></i>
+                </a>
+              </div>
+            {% else %}
+              <span class="text-muted">No file</span>
+            {% endif %}
+          </td>
+
+          <!-- STATUS -->
+          <td>
+            {% if s.status == 'Pending' %}
+              <span class="badge bg-warning text-dark">Pending</span>
+            {% elif s.status == 'Marked' %}
+              <span class="badge bg-success">Marked</span>
+            {% elif s.status == 'Rejected' %}
+              <span class="badge bg-danger">Rejected</span>
+            {% endif %}
+          </td>
+
+          <!-- ACTIONS -->
+          <td class="d-flex gap-2">
+            <form method="post" action="{{ url_for('supervisor.mark_submission', sub_id=s.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-sm btn-success" {% if s.status=='Marked' %}disabled{% endif %}>
+                Mark
+              </button>
+            </form>
+
+            <form method="post" action="{{ url_for('supervisor.reject_submission', sub_id=s.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-sm btn-outline-danger" {% if s.status=='Marked' %}disabled{% endif %}>
+                Reject
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="text-muted text-center">No submissions yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

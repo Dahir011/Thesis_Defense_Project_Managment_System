@@ -1,0 +1,47 @@
+{% extends "layouts/base.html" %}
+{% block title %}Student Login{% endblock %}
+{% block body %}
+<div class="container-xxl py-5">
+  <div class="container">
+    <div class="row g-4 justify-content-center">
+      <div class="col-lg-6">
+        <div class="bg-white rounded shadow p-4 p-md-5">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <img src="{{ url_for('static', filename='img/logo.webp') }}" style="height:42px;width:auto" alt="Logo">
+            <div>
+              <h3 class="mb-0">Student Login</h3>
+              <small class="text-muted">Use your Student ID and password.</small>
+            </div>
+          </div>
+
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+
+          <form method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="mb-3">
+              <label class="form-label">Student ID</label>
+              <input class="form-control" name="student_id" placeholder="e.g. CS001" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input class="form-control" type="password" name="password" required>
+            </div>
+            <button class="btn btn-primary w-100 py-2" type="submit">Login</button>
+          </form>
+
+          <div class="d-flex justify-content-between mt-3">
+            <a href="{{ url_for('main.index') }}">← Back Home</a>
+            <a href="{{ url_for('auth.student_register_step1') }}">Create account</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

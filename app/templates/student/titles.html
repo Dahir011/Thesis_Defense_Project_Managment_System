@@ -1,0 +1,94 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Student Portal" %}
+{% block page_title %}Titles{% endblock %}
+{% block sidebar %}
+
+<a class="nav-link" href="{{ url_for('student.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+<a class="nav-link" href="{{ url_for('student.activities') }}"><i class="bi bi-list-check me-2"></i>Activities</a>
+<a class="nav-link active" href="{{ url_for('student.titles') }}"><i class="bi bi-lightbulb me-2"></i>Titles</a>
+<a class="nav-link" href="{{ url_for('student.teamup') }}"><i class="bi bi-people me-2"></i>Team Up</a>
+<a class="nav-link" href="{{ url_for('student.requests_inbox') }}"><i class="bi bi-inbox me-2"></i>Requests</a>
+
+{% endblock %}
+{% block sidebar_mobile %}{{ self.sidebar() }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="bg-white rounded shadow p-4">
+      <h4 class="mb-2">Title Proposal</h4>
+      <p class="text-muted mb-3">Title selection: 
+        {% if title_open %}<span class="badge bg-success">OPEN</span>{% else %}<span class="badge bg-secondary">CLOSED</span>{% endif %}
+      </p>
+
+      {% if current %}
+        <div class="alert alert-light border">
+          <div class="fw-bold">{{ current.title }}</div>
+          <div class="text-muted">Type: {{ current.project_type or '-' }}</div>
+          <div class="mt-2">
+            <span class="badge bg-info">Admin: {{ current.status_admin }}</span>
+            <span class="badge bg-info">Supervisor: {{ current.status_supervisor }}</span>
+          </div>
+        </div>
+      {% endif %}
+
+      <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="mb-3">
+          <label class="form-label">Project Title</label>
+          <input class="form-control" name="title" placeholder="Enter your proposed title" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Project Type</label>
+          <select class="form-select" name="project_type">
+            <option value="">Select</option>
+            <option>Web App</option>
+            <option>Mobile App</option>
+            <option>AI/ML</option>
+            <option>IoT</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <button class="btn btn-primary w-100" {% if not title_open %}disabled{% endif %}>Submit Title</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="bg-white rounded shadow p-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Taken Titles (Archive + Approved)</h4>
+        <form method="get" class="d-flex gap-2">
+          <input class="form-control form-control-sm" name="q" value="{{ search }}" placeholder="Search titles">
+          <button class="btn btn-sm btn-outline-primary">Search</button>
+        </form>
+      </div>
+      <hr>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Title</th><th>Type</th><th>Source</th></tr></thead>
+          <tbody>
+            {% for t in archive %}
+              <tr>
+                <td>{{ t.title }}</td>
+                <td>{{ t.project_type or '-' }}</td>
+                <td><span class="badge bg-secondary">Archive</span></td>
+              </tr>
+            {% endfor %}
+            {% for p in approved %}
+              <tr>
+                <td>{{ p.title }}</td>
+                <td>{{ p.project_type or '-' }}</td>
+                <td><span class="badge bg-success">Approved</span></td>
+              </tr>
+            {% endfor %}
+            {% if archive|length == 0 and approved|length == 0 %}
+              <tr><td colspan="3" class="text-muted">No titles found.</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

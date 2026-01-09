@@ -1,0 +1,191 @@
+{% extends "layouts/base.html" %}
+{% block title %}UPMS+ TeamUp | Home{% endblock %}
+{% block body %}
+<!-- Navbar Start -->
+<nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
+    <a href="{{ url_for('main.index') }}" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+        <img src="{{ url_for('static', filename='img/logo.webp') }}" alt="SIMAD" style="height:42px;width:auto;margin-right:10px;">
+        <h2 class="m-0 text-primary">UPMS+ TeamUp</h2>
+    </a>
+    <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav ms-auto p-4 p-lg-0">
+            <a href="#about" class="nav-item nav-link">About</a>
+            <a href="#portals" class="nav-item nav-link">Portals</a>
+            <a href="#features" class="nav-item nav-link">Features</a>
+        </div>
+        <a href="#portals" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Get Started<i class="fa fa-arrow-right ms-3"></i></a>
+    </div>
+</nav>
+<!-- Navbar End -->
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="container mt-3">
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
+
+<!-- Carousel/Hero Start (template feeling) -->
+<div class="container-fluid p-0 mb-5">
+    <div class="position-relative">
+        <div class="position-relative">
+            <img class="img-fluid w-100" src="{{ url_for('static', filename='img/carousel-1.jpg') }}" alt="" style="max-height:520px;object-fit:cover;">
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(24, 29, 56, .7);">
+                <div class="container">
+                    <div class="row justify-content-start">
+                        <div class="col-sm-10 col-lg-8">
+                            <h5 class="text-primary text-uppercase mb-3 animated slideInDown">University Project Management</h5>
+                            <h1 class="display-3 text-white animated slideInDown">Manage Teams, Titles, Activities & Supervision</h1>
+                            <p class="fs-5 text-white mb-4 pb-2">A unified system for Students, Supervisors and Admin to manage academic projects end-to-end — with secure logins, imports, approvals, and submissions.</p>
+                            <a href="#portals" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Open Portals</a>
+                            <a href="#about" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Hero End -->
+
+<!-- About Start -->
+<div class="container-xxl py-5" id="about">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
+                <h6 class="section-title bg-white text-start text-primary pe-3">About</h6>
+                <h1 class="mb-4">UPMS+ TeamUp</h1>
+                <p class="mb-4">Built for SIMAD University project supervision workflows: official student dataset import, controlled student account creation, team formation, supervisor assignment, activity tracking, and multi-stage title approvals.</p>
+                <div class="row gy-2 gx-4 mb-4">
+                    <div class="col-sm-6"><p class="mb-0"><i class="fa fa-check text-primary me-2"></i>2-step Student Account Creation</p></div>
+                    <div class="col-sm-6"><p class="mb-0"><i class="fa fa-check text-primary me-2"></i>Shared Group Dashboard</p></div>
+                    <div class="col-sm-6"><p class="mb-0"><i class="fa fa-check text-primary me-2"></i>Admin Imports (CSV/Excel)</p></div>
+                    <div class="col-sm-6"><p class="mb-0"><i class="fa fa-check text-primary me-2"></i>Activities + PDF Submissions</p></div>
+                </div>
+                <a class="btn btn-primary py-3 px-5 mt-2" href="#portals">Go to Portals</a>
+            </div>
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="position-relative overflow-hidden rounded" style="min-height: 380px;">
+                    <img class="position-absolute w-100 h-100" src="{{ url_for('static', filename='img/about.jpg') }}" alt="" style="object-fit: cover;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- About End -->
+
+<!-- Portals Start -->
+<div class="container-xxl py-5" id="portals">
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h6 class="section-title bg-white text-center text-primary px-3">Portals</h6>
+            <h1 class="mb-5">Choose Your Portal</h1>
+        </div>
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="service-item text-center pt-3 h-100">
+                    <div class="p-4">
+                        <i class="fa fa-3x fa-user-graduate text-primary mb-4"></i>
+                        <h5 class="mb-3">Student Login</h5>
+                        <p>Access your group dashboard and submit activities.</p>
+                        <a class="btn btn-primary mt-2" href="{{ url_for('auth.student_login') }}">Open</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.2s">
+                <div class="service-item text-center pt-3 h-100">
+                    <div class="p-4">
+                        <i class="fa fa-3x fa-chalkboard-teacher text-primary mb-4"></i>
+                        <h5 class="mb-3">Supervisor Portal</h5>
+                        <p>Create activities, review submissions, approve titles.</p>
+                        <a class="btn btn-primary mt-2" href="{{ url_for('auth.supervisor_login') }}">Open</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="service-item text-center pt-3 h-100">
+                    <div class="p-4">
+                        <i class="fa fa-3x fa-user-shield text-primary mb-4"></i>
+                        <h5 class="mb-3">Admin Portal</h5>
+                        <p>Imports, registrations, assignments, reports, accounts.</p>
+                        <a class="btn btn-primary mt-2" href="{{ url_for('auth.admin_login') }}">Open</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.4s">
+                <div class="service-item text-center pt-3 h-100">
+                    <div class="p-4">
+                        <i class="fa fa-3x fa-id-card text-primary mb-4"></i>
+                        <h5 class="mb-3">Create Student Account</h5>
+                        <p>2-step verification using official student dataset.</p>
+                        <a class="btn btn-outline-primary mt-2" href="{{ url_for('auth.student_register_step1') }}">Start</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Portals End -->
+
+<!-- Features Start -->
+<div class="container-xxl py-5" id="features">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="service-item text-center pt-3 h-100">
+                    <div class="p-4">
+                        <i class="fa fa-3x fa-database text-primary mb-4"></i>
+                        <h5 class="mb-3">Official Imports</h5>
+                        <p>Admin imports official students and old titles via CSV/Excel.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.2s">
+                <div class="service-item text-center pt-3 h-100">
+                    <div class="p-4">
+                        <i class="fa fa-3x fa-tasks text-primary mb-4"></i>
+                        <h5 class="mb-3">Activities & Submissions</h5>
+                        <p>Admin/Supervisor assign activities; groups submit PDFs; marking workflow.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="service-item text-center pt-3 h-100">
+                    <div class="p-4">
+                        <i class="fa fa-3x fa-check-double text-primary mb-4"></i>
+                        <h5 class="mb-3">Title Approvals</h5>
+                        <p>Student → Admin review → Supervisor approval → Final accepted title list.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Features End -->
+
+<!-- Footer Start -->
+<div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container py-5">
+        <div class="row g-5">
+            <div class="col-lg-6 col-md-6">
+                <h4 class="text-white mb-3">UPMS+ TeamUp</h4>
+                <p>SIMAD University — University Project Management & Supervision System.</p>
+            </div>
+            <div class="col-lg-6 col-md-6 text-lg-end">
+                <p class="mb-0">© {{ 2025 }} UPMS+ TeamUp. All Rights Reserved.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer End -->
+
+{% endblock %}

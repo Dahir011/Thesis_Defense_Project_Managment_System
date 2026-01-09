@@ -1,0 +1,50 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Student Portal" %}
+{% block page_title %}Submit Activity{% endblock %}
+{% block sidebar %}
+
+<a class="nav-link" href="{{ url_for('student.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+<a class="nav-link active" href="{{ url_for('student.activities') }}"><i class="bi bi-list-check me-2"></i>Activities</a>
+<a class="nav-link" href="{{ url_for('student.titles') }}"><i class="bi bi-lightbulb me-2"></i>Titles</a>
+<a class="nav-link" href="{{ url_for('student.teamup') }}"><i class="bi bi-people me-2"></i>Team Up</a>
+<a class="nav-link" href="{{ url_for('student.requests_inbox') }}"><i class="bi bi-inbox me-2"></i>Requests</a>
+
+{% endblock %}
+{% block sidebar_mobile %}{{ self.sidebar() }}{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-4">
+  <h4 class="mb-2">{{ act.title }}</h4>
+  <p class="text-muted mb-3">{{ act.description or '' }}</p>
+
+  <div class="row g-3 mb-3">
+    <div class="col-md-4">
+      <div class="p-3 border rounded bg-light">Deadline: <b>{{ act.deadline_at or '-' }}</b></div>
+    </div>
+    <div class="col-md-4">
+      <div class="p-3 border rounded bg-light">Require PDF: <b>{{ 'Yes' if act.require_pdf else 'No' }}</b></div>
+    </div>
+    <div class="col-md-4">
+      <div class="p-3 border rounded bg-light">Current Status: <b>{{ sub.status if sub else 'Not submitted' }}</b></div>
+    </div>
+  </div>
+
+  {% if sub and sub.file_path %}
+    <div class="alert alert-light border">
+      <div class="fw-bold">Last submission</div>
+      <div class="text-muted">{{ sub.submitted_at }}</div>
+      <div class="text-muted" style="font-size:.9rem">Stored on server: {{ sub.file_path }}</div>
+    </div>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="mb-3">
+      <label class="form-label">Upload File {% if act.require_pdf %}(PDF required){% endif %}</label>
+      <input class="form-control" type="file" name="file" {% if act.require_pdf %}accept="application/pdf"{% endif %}>
+    </div>
+    <button class="btn btn-primary" type="submit">Save Submission</button>
+    <a class="btn btn-outline-dark ms-2" href="{{ url_for('student.activities') }}">Back</a>
+  </form>
+</div>
+{% endblock %}

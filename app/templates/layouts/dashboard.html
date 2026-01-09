@@ -1,0 +1,80 @@
+{% extends "layouts/base.html" %}
+{% block head %}
+<style>
+    .dash-wrapper{min-height:100vh;display:flex;}
+    .dash-sidebar{width:270px;flex:0 0 270px;background:#181d38;color:#fff;}
+    .dash-sidebar a{color:#fff;opacity:.9;text-decoration:none;}
+    .dash-sidebar a:hover{opacity:1}
+    .dash-content{flex:1;background:#f8f9fa;}
+    .dash-topbar{background:#fff;border-bottom:1px solid rgba(0,0,0,.08);}
+    .sidebar-brand{display:flex;align-items:center;gap:.6rem;padding:1rem;}
+    .sidebar-brand img{height:38px;width:auto}
+    .sidebar-nav{padding:0 1rem 1rem;}
+    .sidebar-nav .nav-link{padding:.55rem .75rem;border-radius:10px;margin-bottom:.35rem}
+    .sidebar-nav .nav-link.active,.sidebar-nav .nav-link:hover{background:rgba(255,255,255,.12)}
+    @media (max-width: 576px){
+        .dash-sidebar{display:none;}
+    }
+</style>
+{% endblock %}
+{% block body %}
+<div class="dash-wrapper">
+    <!-- Sidebar Desktop -->
+    <aside class="dash-sidebar d-none d-sm-block">
+        <div class="sidebar-brand">
+            <img src="{{ url_for('static', filename='img/logo.webp') }}" alt="SIMAD">
+            <div>
+                <div class="fw-bold">UPMS+ TeamUp</div>
+                <div style="font-size:.85rem;opacity:.85">{{ sidebar_subtitle|default('Portal') }}</div>
+            </div>
+        </div>
+        <div class="sidebar-nav">
+            {% block sidebar %}{% endblock %}
+        </div>
+    </aside>
+
+    <div class="dash-content">
+        <!-- Topbar -->
+        <div class="dash-topbar px-3 py-2 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <!-- Offcanvas button -->
+                <button class="btn btn-outline-primary btn-sm d-sm-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="fw-bold">{% block page_title %}{% endblock %}</div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                {% if current_user.is_authenticated %}
+                <span class="badge bg-primary">{{ current_user.role|title }}</span>
+                <a class="btn btn-sm btn-outline-dark" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="container-fluid py-4">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Sidebar (Offcanvas) -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
+  <div class="offcanvas-header" style="background:#181d38;color:#fff;">
+    <h5 class="offcanvas-title">UPMS+ TeamUp</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body" style="background:#181d38;color:#fff;">
+    {% block sidebar_mobile %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

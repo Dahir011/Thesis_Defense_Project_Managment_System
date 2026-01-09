@@ -1,0 +1,61 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Student Portal" %}
+{% block page_title %}Team Up{% endblock %}
+{% block sidebar %}
+
+<a class="nav-link" href="{{ url_for('student.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+<a class="nav-link" href="{{ url_for('student.activities') }}"><i class="bi bi-list-check me-2"></i>Activities</a>
+<a class="nav-link" href="{{ url_for('student.titles') }}"><i class="bi bi-lightbulb me-2"></i>Titles</a>
+<a class="nav-link active" href="{{ url_for('student.teamup') }}"><i class="bi bi-people me-2"></i>Team Up</a>
+<a class="nav-link" href="{{ url_for('student.requests_inbox') }}"><i class="bi bi-inbox me-2"></i>Requests</a>
+
+{% endblock %}
+{% block sidebar_mobile %}{{ self.sidebar() }}{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-4">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h4 class="mb-1">Find Students to Team Up</h4>
+      <p class="text-muted mb-0">Only students who are registered and not in any group can be requested.</p>
+    </div>
+    <a class="btn btn-outline-primary" href="{{ url_for('student.requests_inbox') }}"><i class="bi bi-inbox"></i> Requests</a>
+  </div>
+  <hr>
+
+  <form method="get" class="row g-2 align-items-end">
+    <div class="col-md-8">
+      <label class="form-label">Search</label>
+      <input class="form-control" name="q" value="{{ q }}" placeholder="Search by name or Student ID">
+    </div>
+    <div class="col-md-4">
+      <button class="btn btn-primary w-100" type="submit"><i class="bi bi-search"></i> Search</button>
+    </div>
+  </form>
+
+  <div class="table-responsive mt-4">
+    <table class="table align-middle">
+      <thead><tr><th>Student</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for acc2, master in candidates %}
+          <tr>
+            <td>
+              <div class="fw-bold">{{ master.name }}</div>
+              <div class="text-muted">{{ master.student_id }} • {{ master.program }}</div>
+            </td>
+            <td>
+              <form method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="receiver_student_id" value="{{ master.student_id }}">
+                <button class="btn btn-sm btn-primary"><i class="bi bi-send"></i> Send Request</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="2" class="text-muted">No available students found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

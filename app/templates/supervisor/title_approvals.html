@@ -1,0 +1,49 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Supervisor Portal" %}
+{% block page_title %}Title Approvals{% endblock %}
+{% block sidebar %}
+
+<a class="nav-link" href="{{ url_for('supervisor.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+<a class="nav-link" href="{{ url_for('supervisor.groups') }}"><i class="bi bi-people me-2"></i>Assigned Groups</a>
+<a class="nav-link" href="{{ url_for('supervisor.activity_create') }}"><i class="bi bi-plus-circle me-2"></i>Create Activity</a>
+<a class="nav-link" href="{{ url_for('supervisor.reports') }}"><i class="bi bi-clipboard-data me-2"></i>Activity Report</a>
+<a class="nav-link active" href="{{ url_for('supervisor.title_approvals') }}"><i class="bi bi-check2-square me-2"></i>Title Approvals</a>
+
+{% endblock %}
+{% block sidebar_mobile %}{{ self.sidebar() }}{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-4">
+  <h4 class="mb-3">Titles Forwarded by Admin</h4>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>Group</th><th>Title</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for tp in props %}
+          <tr>
+            <td class="fw-bold">{{ tp.group_code }}</td>
+            <td>{{ tp.title }}</td>
+            <td>{{ tp.project_type or '-' }}</td>
+            <td>
+              <span class="badge bg-info">Admin: {{ tp.status_admin }}</span>
+              <span class="badge bg-info">Supervisor: {{ tp.status_supervisor }}</span>
+            </td>
+            <td class="d-flex gap-2">
+              <form method="post" action="{{ url_for('supervisor.approve_title', tp_id=tp.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-sm btn-success" {% if tp.status_supervisor=='Approved' %}disabled{% endif %}>Approve</button>
+              </form>
+              <form method="post" action="{{ url_for('supervisor.reject_title', tp_id=tp.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-sm btn-outline-danger" {% if tp.status_supervisor=='Approved' %}disabled{% endif %}>Reject</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5" class="text-muted">No titles pending approval.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

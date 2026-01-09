@@ -1,0 +1,52 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Admin Portal" %}
+{% block page_title %}Import Data{% endblock %}
+{% block sidebar %}
+
+<a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+<a class="nav-link" href="{{ url_for('admin.import_page') }}"><i class="bi bi-upload me-2"></i>Import Data</a>
+<a class="nav-link" href="{{ url_for('admin.registration') }}"><i class="bi bi-person-plus me-2"></i>Registration</a>
+<a class="nav-link" href="{{ url_for('admin.supervisors') }}"><i class="bi bi-person-badge me-2"></i>Supervisors</a>
+<a class="nav-link" href="{{ url_for('admin.students') }}"><i class="bi bi-people me-2"></i>Students</a>
+<a class="nav-link" href="{{ url_for('admin.assigning') }}"><i class="bi bi-diagram-3 me-2"></i>Assigning</a>
+<a class="nav-link" href="{{ url_for('admin.title_control') }}"><i class="bi bi-lightbulb me-2"></i>Title Control</a>
+<a class="nav-link" href="{{ url_for('admin.activity') }}"><i class="bi bi-clipboard-data me-2"></i>Activity Report</a>
+<a class="nav-link" href="{{ url_for('admin.accounts') }}"><i class="bi bi-shield-lock me-2"></i>Accounts</a>
+
+{% endblock %}
+{% block sidebar_mobile %}{{ self.sidebar() }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="bg-white rounded shadow p-4">
+      <h4 class="mb-2">Import Students Dataset</h4>
+      <p class="text-muted">Upload CSV or Excel with columns: student_id, name, gender, phone, email, faculty, program, batch</p>
+      <form method="post" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="kind" value="students">
+        <input class="form-control mb-3" type="file" name="file" accept=".csv,.xlsx,.xls" required>
+        <button class="btn btn-primary w-100">Import Students</button>
+      </form>
+      <hr>
+      <div class="alert alert-light border mb-0">
+        <div class="fw-bold">Tip</div>
+        <div class="text-muted">After import, students can create accounts using their official Student ID.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="bg-white rounded shadow p-4">
+      <h4 class="mb-2">Import Titles Archive</h4>
+      <p class="text-muted">Upload CSV/Excel with columns: title, project_type, year (optional: department)</p>
+      <form method="post" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="kind" value="titles">
+        <input class="form-control mb-3" type="file" name="file" accept=".csv,.xlsx,.xls" required>
+        <button class="btn btn-primary w-100">Import Titles</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

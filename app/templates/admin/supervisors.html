@@ -1,0 +1,54 @@
+{% extends "layouts/dashboard.html" %}
+{% set sidebar_subtitle = "Admin Portal" %}
+{% block page_title %}Supervisors{% endblock %}
+{% block sidebar %}
+
+<a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+<a class="nav-link" href="{{ url_for('admin.import_page') }}"><i class="bi bi-upload me-2"></i>Import Data</a>
+<a class="nav-link" href="{{ url_for('admin.registration') }}"><i class="bi bi-person-plus me-2"></i>Registration</a>
+<a class="nav-link" href="{{ url_for('admin.supervisors') }}"><i class="bi bi-person-badge me-2"></i>Supervisors</a>
+<a class="nav-link" href="{{ url_for('admin.students') }}"><i class="bi bi-people me-2"></i>Students</a>
+<a class="nav-link" href="{{ url_for('admin.assigning') }}"><i class="bi bi-diagram-3 me-2"></i>Assigning</a>
+<a class="nav-link" href="{{ url_for('admin.title_control') }}"><i class="bi bi-lightbulb me-2"></i>Title Control</a>
+<a class="nav-link" href="{{ url_for('admin.activity') }}"><i class="bi bi-clipboard-data me-2"></i>Activity Report</a>
+<a class="nav-link" href="{{ url_for('admin.accounts') }}"><i class="bi bi-shield-lock me-2"></i>Accounts</a>
+
+{% endblock %}
+{% block sidebar_mobile %}{{ self.sidebar() }}{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded shadow p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">All Supervisors</h4>
+    <a class="btn btn-primary" href="{{ url_for('admin.registration', tab='supervisor') }}"><i class="bi bi-person-plus"></i> Add Supervisor</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>Username</th><th>Name</th><th>Email</th><th>Phone</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for u, p in supervisors %}
+          <tr>
+            <td class="fw-bold">{{ u.username }}</td>
+            <td>{{ p.name }}</td>
+            <td>{{ p.email or '-' }}</td>
+            <td>{{ p.phone or '-' }}</td>
+            <td class="d-flex gap-2">
+              <form method="post" action="{{ url_for('admin.reset_supervisor_password', user_id=u.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input class="form-control form-control-sm" style="width:140px" name="new_password" placeholder="new pass">
+                <button class="btn btn-sm btn-outline-primary">Reset</button>
+              </form>
+              <form method="post" action="{{ url_for('admin.delete_supervisor', user_id=u.id) }}" onsubmit="return confirm('Delete supervisor?')">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-sm btn-outline-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5" class="text-muted">No supervisors yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
